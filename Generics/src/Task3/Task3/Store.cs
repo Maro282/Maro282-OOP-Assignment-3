@@ -2,7 +2,7 @@
 
 namespace Task3;
 
-public class Store<T>
+public class Store<T> where T : class, IHasId
 {
 
     private readonly List<T> _items = new();
