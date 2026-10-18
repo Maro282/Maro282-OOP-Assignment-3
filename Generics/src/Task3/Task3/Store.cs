@@ -5,33 +5,49 @@ namespace Task3;
 public class Store<T> where T : class, IHasId
 {
 
-    private readonly List<T> _items = new();
+    private readonly Dictionary<int, T> _collection = new();
 
-    public void Add(T item)
+
+    public void Add(T obj)
     {
-        _items.Add(item);
+        ArgumentNullException.ThrowIfNull(obj);
+
+        if (!_collection.TryAdd(obj.Id, obj))
+            throw new ArgumentException($"An object with Id {obj.Id} already exists.", nameof(obj));
     }
+
+
 
     public T? GetById(int id)
     {
-        foreach (var item in _items)
-        {
-            if (item.Id == id) return item; // does not compile
-        }
 
-        return null; // does not compile
+
+        if (!_collection.TryGetValue(id, out T obj))
+        {
+            return null;
+        }
+        else
+        {
+            return obj;
+        }
 
     }
 
-    public IReadOnlyList<T> GetAll() => _items;
 
-
+    public IReadOnlyDictionary<int, T> GetAll() => _collection;
 
     public void Remove(int id)
     {
-        var item = GetById(id);
-        if (item == null) throw new ArgumentNullException("Id not fount");
-        _items.Remove(item);
-        Console.WriteLine("Deleted successfully");
+
+        if (!_collection.TryGetValue(id, out T obj))
+        {
+            throw new ArgumentOutOfRangeException("Id not foud");
+        }
+        else
+        {
+            _collection.Remove(id);
+        }
+
     }
+
 }
